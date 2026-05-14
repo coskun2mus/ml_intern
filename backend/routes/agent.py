@@ -10,7 +10,7 @@ import logging
 import os
 from typing import Any
 
-from dependencies import get_current_user, require_huggingface_org_member
+from backend.dependencies import get_current_user, require_huggingface_org_member
 from fastapi import (
     APIRouter,
     Depends,
@@ -19,7 +19,7 @@ from fastapi import (
 )
 from fastapi.responses import StreamingResponse
 from litellm import acompletion
-from models import (
+from backend.models import (
     ApprovalRequest,
     HealthResponse,
     LLMHealthResponse,
@@ -28,10 +28,11 @@ from models import (
     SessionResponse,
     SubmitRequest,
     TruncateRequest,
+    SchoolOptimizationRequest,
 )
-from session_manager import MAX_SESSIONS, AgentSession, SessionCapacityError, session_manager
+from backend.session_manager import MAX_SESSIONS, AgentSession, SessionCapacityError, session_manager
 
-import user_quotas
+from backend import user_quotas
 
 from agent.core.hf_access import get_jobs_access
 from agent.core.hf_tokens import resolve_hf_request_token, resolve_hf_router_token
@@ -47,6 +48,12 @@ AVAILABLE_MODELS = [
         "label": "Kimi K2.6",
         "provider": "huggingface",
         "tier": "free",
+        "recommended": True,
+    },
+    {
+        "id": "gemini/gemini-3-flash-preview",
+        "label": "Gemini 3 Flash Preview",
+        "provider": "google",
         "recommended": True,
     },
     {
@@ -844,3 +851,47 @@ async def submit_feedback(
             agent_session.session.config.session_dataset_repo
         )
     return {"status": "ok"}
+@router.post("/school/optimize")
+async def optimize_school(
+    request: SchoolOptimizationRequest, user: dict = Depends(get_current_user)
+) -> dict:
+    """Strategic financial optimization for the school tool.
+    
+    Bridges the HTML simulator with the ML-Intern agent logic.
+    """
+    session_id = request.session_id
+    if not session_id:
+        session_id = await session_manager.create_session(
+            user_id=user["user_id"],
+            model=session_manager.config.model_name
+        )
+    
+    # Prepare a high-authority strategic prompt
+    prompt = f"""
+[STRATEJİK ANALİZ GÖREVİ]
+Aşağıdaki okul finansal verilerini analiz et ve bir Montessori kurumu perspektifiyle 
+'Architect of Thought' persona kurallarına bağlı kalarak optimize et. 
+Sycophancy (yaltaklanma) yapma, doğrudan riskleri ve fırsatları söyle.
+
+VERİLER:
+{json.dumps(request.data, indent=2, ensure_ascii=False)}
+
+ANALİZİ ŞU BAŞLIKLARLA YAP:
+1. Senaryo Kıyaslaması (Hangi plan daha karlı?)
+2. Enflasyon ve Nema Riski Değerlendirmesi
+3. Veli Sadakati (CLD) ve Negative Constraint Robustness (NCR) Etkisi
+4. Kısa/Orta Vade Önerisi (Net aksiyon planı)
+"""
+    
+    # Submit to the agent loop
+    success = await session_manager.submit_user_input(session_id, prompt)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to submit to agent loop")
+    
+    # For Plan A, we wait for the first non-event response or a summary
+    # For now, return the session_id so the UI can follow the stream
+    return {
+        "status": "submitted",
+        "session_id": session_id,
+        "analysis_prompt": "Agent analizi başlatıldı. Oturum üzerinden takip edebilirsiniz."
+    }

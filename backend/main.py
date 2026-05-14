@@ -14,9 +14,9 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from routes.agent import router as agent_router
-from routes.auth import router as auth_router
-from session_manager import session_manager
+from backend.routes.agent import router as agent_router
+from backend.routes.auth import router as auth_router
+from backend.session_manager import session_manager
 
 # Configure logging
 logging.basicConfig(
@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
     # Start in-process hourly KPI rollup. Replaces an external cron so the
     # rollup lives next to the data and reuses the Space's HF token.
     try:
-        import kpis_scheduler
+        import backend.kpis_scheduler as kpis_scheduler
         kpis_scheduler.start()
     except Exception as e:
         logger.warning("KPI scheduler failed to start: %s", e)
@@ -42,7 +42,7 @@ async def lifespan(app: FastAPI):
 
     logger.info("Shutting down HF Agent backend...")
     try:
-        import kpis_scheduler
+        import backend.kpis_scheduler as kpis_scheduler
         await kpis_scheduler.shutdown()
     except Exception as e:
         logger.warning("KPI scheduler shutdown failed: %s", e)
@@ -73,12 +73,7 @@ app = FastAPI(
 # CORS middleware for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost:3000",
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000",
-    ],
+    allow_origin_regex=".*",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

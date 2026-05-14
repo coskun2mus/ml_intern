@@ -1,5 +1,5 @@
 {
-  "model_name": "anthropic/claude-opus-4-6",
+  "model_name": "gemini/gemini-3-flash-preview",
   "save_sessions": true,
   "session_dataset_repo": "smolagents/ml-intern-sessions",
   "yolo_mode": false,

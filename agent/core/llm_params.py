@@ -168,6 +168,9 @@ def _resolve_llm_params(
         # the same way, so we leave it off for now.
         return {"model": model_name}
 
+    if model_name.startswith("gemini/"):
+        return {"model": model_name}
+
     if model_name.startswith("openai/"):
         params = {"model": model_name}
         if reasoning_effort:

@@ -10,7 +10,7 @@ import time
 from urllib.parse import urlencode
 
 import httpx
-from dependencies import AUTH_ENABLED, get_current_user
+from backend.dependencies import AUTH_ENABLED, get_current_user
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 

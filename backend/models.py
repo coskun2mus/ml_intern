@@ -112,3 +112,10 @@ class LLMHealthResponse(BaseModel):
     model: str
     error: str | None = None
     error_type: str | None = None  # "auth" | "credits" | "rate_limit" | "network" | "unknown"
+
+
+class SchoolOptimizationRequest(BaseModel):
+    """Request for strategic school financial analysis."""
+
+    session_id: str | None = None
+    data: dict[str, Any]

@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Montessori Okul Optimizasyon Modeli V5 - Çift Zam (Temmuz Başlangıçlı)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --color-background-primary: #ffffff;
+      --color-background-secondary: #f8f9fa;
+      --color-background-info: #e3f2fd;
+      --color-background-success: #e8f5e9;
+      --color-background-warning: #fff3e0;
+      --color-text-primary: #1a1c1e;
+      --color-text-secondary: #5f6368;
+      --color-text-info: #185fa5;
+      --color-text-success: #2e7d32;
+      --color-text-warning: #ef6c00;
+      --color-text-danger: #d32f2f;
+      --color-border-secondary: #dadce0;
+      --color-border-tertiary: #e0e0e0;
+      --border-radius-lg: 16px;
+      --border-radius-md: 8px;
+      --font-sans: 'Inter', -apple-system, sans-serif;
+    }
+
+    body { font-family: var(--font-sans); background-color: #f1f3f5; color: var(--color-text-primary); margin: 0; padding: 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    header { margin-bottom: 24px; border-bottom: 2px solid var(--color-text-info); padding-bottom: 12px; }
+    header h1 { font-size: 24px; font-weight: 600; margin: 0; color: var(--color-text-info); }
+    
+    .panel { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.5rem; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; color: var(--color-text-primary); }
+
+    .slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; padding: 8px 12px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); }
+    .slider-label { font-size: 13px; color: var(--color-text-secondary); min-width: 180px; font-weight: 500; }
+    input[type="range"] { flex: 1; accent-color: var(--color-text-info); }
+    .slider-val { font-size: 13px; font-weight: 600; min-width: 45px; text-align: right; color: var(--color-text-primary); }
+    .slider-fee { font-size: 13px; font-weight: 600; min-width: 90px; text-align: right; color: var(--color-text-info); background: #fff; padding: 2px 8px; border-radius: 4px; border: 1px solid #eee; }
+
+    .tab-row { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .tab { padding: 10px 20px; border-radius: 30px; border: 1px solid var(--color-border-secondary); font-size: 14px; font-weight: 500; cursor: pointer; background: white; transition: all 0.2s; }
+    .tab.active { background: var(--color-text-info); color: white; border-color: var(--color-text-info); box-shadow: 0 4px 10px rgba(24, 95, 165, 0.2); }
+
+    .scenario-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+    .scenario-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+    .scenario-card.best { border: 2px solid var(--color-text-info); background: var(--color-background-info); transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.05); }
+
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 15px; }
+    .metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; border-left: 4px solid var(--color-text-info); }
+    .metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+    .metric-value { font-size: 20px; font-weight: 600; }
+
+    .detail-table { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; margin-top: 12px; font-size: 13px; }
+    .table-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+    .table-row:last-child { border-bottom: none; font-weight: 600; font-size: 14px; }
+    
+    .chart-wrap { position: relative; width: 100%; height: 300px; margin-top: 12px; }
+    .pos { color: var(--color-text-success) !important; }
+    .neg { color: var(--color-text-danger) !important; }
+    .badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Okul Gelir Optimizasyon Modeli V5</h1>
+    <p style="margin:4px 0; font-size:14px; color:var(--color-text-secondary)">Temmuz Başlangıçlı 12 Aylık Finansal Takvim</p>
+  </header>
+
+  <div class="panel">
+    <div class="section-title">Değişkenler</div>
+    <div class="slider-row">
+      <span class="slider-label">Mevcut Aylık Ücret</span>
+      <input type="range" min="30000" max="80000" step="10" value="37600" id="s1" oninput="upd()">
+      <span class="slider-val" id="o1" style="min-width:80px">₺37.600</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Öğrenci Sayısı</span>
+      <input type="range" min="10" max="150" step="1" value="70" id="s3" oninput="upd()">
+      <span class="slider-val" id="o3" style="min-width:80px">70</span>
+    </div>
+    <div class="slider-row" style="background: #eef2f7">
+      <span class="slider-label">Tek Zam Oranı (%) - Temmuz</span>
+      <input type="range" min="0" max="100" step="1" value="28" id="s2" oninput="upd()">
+      <span class="slider-val" id="o2">%28</span>
+      <span class="slider-fee" id="o2-fee">₺0</span>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+      <div class="slider-row" style="margin-bottom:0">
+        <span class="slider-label" style="min-width:100px">1. Zam (Tem)</span>
+        <input type="range" min="0" max="50" step="1" value="15" id="s6" oninput="upd()">
+        <span class="slider-val" id="o6">%15</span>
+        <span class="slider-fee" id="o6-fee">₺0</span>
+        <!-- AI Insight Trigger -->
+        <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <button id="agent-btn" onclick="triggerAgentAnalysis()" style="width: 100%; padding: 1rem; background: linear-gradient(135deg, var(--primary), #6366f1); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 12L2.69 7"></path><path d="M12 12l5.63 8.16"></path><path d="M12 12l-8.31 4.79"></path><path d="M12 12l8.31-4.79"></path><path d="M12 12l-5.63-8.16"></path></svg>
+                ML-Intern Stratejik Analiz Al
+            </button>
+            <div id="ai-status" style="margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); text-align: center; display: none;">
+                <span class="spinner" style="display: inline-block; width: 12px; height: 12px; border: 2px solid var(--primary); border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite; margin-right: 0.5rem;"></span>
+                Analiz hazırlanıyor...
+            </div>
+        </div>
+      </div>
+      <div class="slider-row" style="margin-bottom:0">
+        <span class="slider-label" style="min-width:100px">2. Zam (Oca)</span>
+        <input type="range" min="0" max="50" step="1" value="15" id="s7" oninput="upd()">
+        <span class="slider-val" id="o7">%15</span>
+        <span class="slider-fee" id="o7-fee">₺0</span>
+      </div>
+    </div>
+    
+    <div class="main-content" style="margin-top: 20px;">
+        <!-- AI Results Card (Hidden by default) -->
+        <div id="ai-results-card" class="card" style="display: none; border-left: 4px solid var(--primary); background: linear-gradient(to right, #f8fafc, #ffffff);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h3 style="margin: 0; color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    ML-Intern Stratejik İçgörü
+                </h3>
+                <span id="ai-session-id" style="font-size: 0.7rem; color: var(--text-secondary); font-family: monospace;"></span>
+            </div>
+            <div id="ai-content" style="line-height: 1.6; color: var(--text-main); white-space: pre-wrap;"></div>
+            <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary); font-style: italic;">
+                *Bu analiz gerçek zamanlı ekonomik veriler ve Montessori işletme modelleri kullanılarak ML-Intern Agent tarafından üretilmiştir.
+            </div>
+        </div>
+    </div>
+
+    <div class="slider-row" style="margin-top:10px">
+        <span class="slider-label">Fon Getirisi / İskonto</span>
+        <input type="range" min="0" max="60" step="1" value="30" id="s4" oninput="upd()" style="margin-right:10px">
+        <span class="slider-val" id="o4" style="min-width:40px">%30</span>
+        <input type="range" min="0" max="20" step="1" value="5" id="s5" oninput="upd()" style="margin-left:10px">
+        <span class="slider-val" id="o5" style="min-width:40px">%5</span>
+    </div>
+  </div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="sw('sn',this)">Senaryo Karşılaştırma</button>
+    <button class="tab" onclick="sw('ps',this)">Peşin Ödeme</button>
+    <button class="tab" onclick="sw('nm',this)">Nis-May Ön Ödeme</button>
+    <button class="tab" onclick="sw('zm',this)">Zam Analizi</button>
+  </div>
+
+  <div id="t-sn">
+    <div class="panel">
+      <div class="section-title">Yıllık Toplam Gelir (Temmuz-Haziran)</div>
+      <div class="scenario-grid" id="sg"></div>
+      <div class="chart-wrap"><canvas id="c1"></canvas></div>
+    </div>
+  </div>
+
+  <div id="t-ps" style="display:none">
+    <div class="panel">
+      <div class="section-title">6 Aylık Peşin Hesabı</div>
+      <div class="detail-table" id="ph"></div>
+      <div class="metric-grid" id="pm"></div>
+      <div class="chart-wrap"><canvas id="c2"></canvas></div>
+    </div>
+  </div>
+
+  <div id="t-nm" style="display:none">
+    <div class="panel">
+      <div class="section-title">Nis-May Ön Ödeme Detayı</div>
+      <div class="detail-table" id="nh"></div>
+      <div class="metric-grid" id="nm2"></div>
+      <div class="chart-wrap"><canvas id="c3"></canvas></div>
+    </div>
+  </div>
+
+  <div id="t-zm" style="display:none">
+    <div class="panel">
+      <div class="section-title">Nakit Akış Analizi (Temmuz Başlangıçlı)</div>
+      <div class="detail-table" id="zh"></div>
+      <div class="metric-grid" id="zm2"></div>
+      <div class="chart-wrap" style="height:350px"><canvas id="c4"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+  let CH = {};
+  function tl(n){ return '₺' + Math.round(n).toLocaleString('tr-TR'); }
+
+  function gp(){
+    const u = +document.getElementById('s1').value;
+    const z = +document.getElementById('s2').value / 100;
+    const og = +document.getElementById('s3').value;
+    const al = +document.getElementById('s4').value / 100;
+    const is = +document.getElementById('s5').value / 100;
+    const z1 = +document.getElementById('s6').value / 100;
+    const z2 = +document.getElementById('s7').value / 100;
+    return { u, z, og, al, is, z1, z2 };
+  }
+
+  function cv(p){
+    const yU = p.u + (p.u * p.z);
+    const A = yU * 12 * p.og;
+
+    const pNet = (yU * 6) * (1 - p.is);
+    const pTop = pNet * p.og;
+    const pAlt = pTop * (p.al * 0.25); // %30 yıllık oranın 3 aylık getirisi (%7.5)
+    const B = pTop + pAlt + (yU * 6 * p.og); // 6 ay peşin + nema + 6 ay aylık ödeme
+
+    const nmOd = p.u * 2 * p.og;
+    const nmAlt = nmOd * (p.al * 12/12);
+    const C = nmOd + nmAlt + (yU * 10 * p.og);
+    const cKay = (yU - p.u) * 2 * p.og;
+
+    const u1 = p.u * (1 + p.z1);
+    const u2 = u1 * (1 + p.z2);
+    const tArt = ((u2 / p.u) - 1) * 100;
+    const D = (u1 * 6 + u2 * 6) * p.og;
+
+    return { yU, A, B, C, D, pNet, pTop, pAlt, nmOd, nmAlt, cKay, u1, u2, tArt };
+  }
+
+  function upd(){
+    const p = gp(); const v = cv(p);
+    document.getElementById('o1').textContent = tl(p.u);
+    document.getElementById('o2').textContent = '%' + Math.round(p.z * 100);
+    document.getElementById('o2-fee').textContent = '➔ ' + tl(v.yU);
+    
+    document.getElementById('o3').textContent = p.og;
+    document.getElementById('o4').textContent = '%' + Math.round(p.al * 100);
+    document.getElementById('o5').textContent = '%' + Math.round(p.is * 100);
+    
+    document.getElementById('o6').textContent = '%' + Math.round(p.z1 * 100);
+    document.getElementById('o6-fee').textContent = '➔ ' + tl(v.u1);
+    
+    document.getElementById('o7').textContent = '%' + Math.round(p.z2 * 100);
+    document.getElementById('o7-fee').textContent = '➔ ' + tl(v.u2);
+
+    const activeTab = document.querySelector('.tab.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+    if(activeTab==='sn') rSn(p,v);
+    else if(activeTab==='ps') rPs(p,v);
+    else if(activeTab==='nm') rNm(p,v);
+    else if(activeTab==='zm') rZm(p,v);
+  }
+
+  function rSn(p,v){
+    const best = Math.max(v.A, v.B, v.C, v.D);
+    const sc = [
+      {l:'Tek Zam (Tem)', val:v.A, b:'Standart', bc:'badge-info'},
+      {l:'Peşin + Fon', val:v.B, b:'Likidite Koruma', bc:'badge-success'},
+      {l:'Ön Ödeme', val:v.C, b:'Kayıp Telafisi', bc:'badge-warn'},
+      {l:'Çift Zam (Tem+Oca)', val:v.D, b:'Kademeli', bc:'badge-info'}
+    ];
+    document.getElementById('sg').innerHTML = sc.map(s => `
+      <div class="scenario-card ${Math.abs(s.val-best)<1?'best':''}">
+        <div class="badge ${s.bc}">${s.b}</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:6px">${s.l}</div>
+        <div style="font-size:22px;font-weight:600">${tl(s.val)}</div>
+        <div style="font-size:11px;color:var(--color-text-secondary);margin-top:4px">Birim: ${tl(v.yU)} / Ay</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px" class="${s.val>=v.A?'pos':'neg'}">Fark: ${tl(s.val-v.A)}</div>
+      </div>`).join('');
+    
+    dc('c1');
+    CH['c1'] = new Chart(document.getElementById('c1'), {
+      type:'bar', data:{ labels:['Tek Zam','Peşin','Ön Ödeme','Çift Zam'], datasets:[{ data:[v.A,v.B,v.C,v.D], backgroundColor:['#378ADD','#1D9E75','#BA7517','#7F77DD'], borderRadius:8 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:n=>'₺'+(n/1000000).toFixed(1)+'M'}}}}
+    });
+  }
+
+  function rPs(p,v){
+    document.getElementById('ph').innerHTML = `
+      <div class="table-row"><span>Zamlı Birim Fiyat (Temmuz'dan İtibaren)</span><span>${tl(v.yU)}</span></div>
+      <div class="table-row"><span>6 Ay İskontolu Peşin (Öğrenci Başı)</span><span>${tl(v.pNet)}</span></div>
+      <div class="table-row"><span>Okul Toplam Tahsilat</span><span>${tl(v.pTop)}</span></div>
+      <div class="table-row"><span>Fon Getirisi</span><span class="pos">${tl(v.pAlt)}</span></div>
+      <div class="table-row"><span>Genel Toplam (Temmuz-Haziran)</span><span>${tl(v.B)}</span></div>
+    `;
+    document.getElementById('pm').innerHTML = `
+      <div class="metric"><div class="metric-label">Peşin İskontolu Birim</div><div class="metric-value">${tl(v.pNet/6)}</div></div>
+      <div class="metric"><div class="metric-label">Okul Net Avantajı</div><div class="metric-value pos">${tl(v.B-v.A)}</div></div>
+    `;
+    dc('c2');
+    CH['c2'] = new Chart(document.getElementById('c2'), {
+      type:'bar', data:{ labels:['Standart Gelir','Stratejik Gelir'], datasets:[{ label:'Ücret', data:[v.A, v.pTop + (v.yU*6*p.og)], backgroundColor:'#378ADD', borderRadius:8 }, { label:'Yatırım', data:[0, v.pAlt], backgroundColor:'#1D9E75', borderRadius:8 }]},
+      options:{ responsive:true, maintainAspectRatio:false, scales:{x:{stacked:true}, y:{stacked:true, ticks:{callback:n=>'₺'+(n/1000000).toFixed(1)+'M'}}}}
+    });
+  }
+
+  function rNm(p,v){
+    const net = v.nmAlt - v.cKay;
+    document.getElementById('nh').innerHTML = `
+      <div class="table-row"><span>Nis-May Tahsilat (Eski Fiyat)</span><span>${tl(v.nmOd)}</span></div>
+      <div class="table-row"><span>12 Ay Fon Getirisi (Nis26-Nis27)</span><span class="pos">${tl(v.nmAlt)}</span></div>
+      <div class="table-row"><span>Feragat Edilen Zam Farkı (Gelecek Dönem)</span><span class="neg">${tl(v.cKay)}</span></div>
+      <div class="table-row"><span>Net Stratejik Sonuç</span><span class="${net>=0?'pos':'neg'}">${tl(net)}</span></div>
+    `;
+    dc('c3');
+    CH['c3'] = new Chart(document.getElementById('c3'), {
+      type:'bar', data:{ labels:['Zam Farkı Kaybı','Yatırım Getirisi','Net Etki'], datasets:[{ data:[-v.cKay, v.nmAlt, net], backgroundColor:['#E24B4A','#1D9E75',net>=0?'#1D9E75':'#E24B4A'], borderRadius:8 }]},
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}}
+    });
+  }
+
+  function rZm(p,v){
+    const m = ['Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara', 'Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz'];
+    const tek = m.map(()=>v.yU*p.og);
+    const cft = m.map((_,i)=>(i<6?v.u1:v.u2)*p.og);
+    
+    document.getElementById('zh').innerHTML = `
+      <div class="table-row"><span>Mevcut Ücret (Dönem Öncesi)</span><span>${tl(p.u)}</span></div>
+      <div class="table-row"><span>Tek Zam Birim (Temmuz Başlangıç)</span><span>${tl(v.yU)}</span></div>
+      <div class="table-row"><span>Çift Zam 1. Birim (Temmuz)</span><span>${tl(v.u1)}</span></div>
+      <div class="table-row"><span>Çift Zam 2. Birim (Ocak)</span><span>${tl(v.u2)}</span></div>
+      <div class="table-row"><span>Bileşik Toplam Artış</span><span>%${v.tArt.toFixed(1)}</span></div>
+    `;
+    dc('c4');
+    CH['c4'] = new Chart(document.getElementById('c4'), {
+      type:'line', data:{ labels:m, datasets:[{ label:'Tek Zam (Tem)', data:tek, borderColor:'#378ADD', tension:0.3 },{ label:'Çift Zam (Tem+Oca)', data:cft, borderColor:'#1D9E75', tension:0.3 }]},
+      options:{ responsive:true, maintainAspectRatio:false, scales:{y:{ticks:{callback:n=>'₺'+(n/1000000).toFixed(1)+'M'}}}}
+    });
+  }
+
+  function dc(id){ if(CH[id]){CH[id].destroy();delete CH[id];} }
+  
+  async function triggerAgentAnalysis() {
+      const p = gp(); const v = cv(p);
+      const btn = document.getElementById('agent-btn');
+      const status = document.getElementById('ai-status');
+      const resultCard = document.getElementById('ai-results-card');
+      const content = document.getElementById('ai-content');
+      const sessIdSpan = document.getElementById('ai-session-id');
+
+      const data = {
+          currentFee: p.u,
+          students: p.og,
+          increase1: p.z1,
+          increase2: p.z2,
+          inflation: p.z,
+          yieldRate: p.al,
+          calculatedResults: {
+              planA: v.A,
+              planB: v.B,
+              advantage: v.B-v.A
+          },
+          timestamp: new Date().toISOString()
+      };
+
+      try {
+          btn.disabled = true;
+          btn.style.opacity = '0.7';
+          status.style.display = 'block';
+
+          const response = await fetch('http://localhost:7860/api/school/optimize', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ data })
+          });
+
+          const result = await response.json();
+          
+          if (result.status === 'submitted') {
+              resultCard.style.display = 'block';
+              sessIdSpan.innerText = `SID: ${result.session_id}`;
+              content.innerHTML = `<div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; color: #166534; margin-bottom: 1rem;">
+                  <strong>Talimat Gönderildi!</strong><br>
+                  Analiz ML-Intern Agent loop'unda başlatıldı. Detaylı raporu ve interaktif diyaloğu takip etmek için ML-Intern ana panelindeki yeni oturuma geçebilirsiniz.
+              </div>
+              <p>Gönderilen veri özeti:</p>
+              <ul style="font-size: 0.9rem;">
+                  <li>Baz Ücret: ${data.currentFee.toLocaleString()} TL</li>
+                  <li>Öğrenci: ${data.students}</li>
+                  <li>Kümülatif Zam: %${((1 + data.increase1)*(1 + data.increase2)-1)*100}</li>
+              </ul>`;
+              
+              status.style.display = 'none';
+              resultCard.scrollIntoView({ behavior: 'smooth' });
+          }
+      } catch (err) {
+          console.error(err);
+          alert('ML-Intern bağlantısı başarısız. Lütfen backend sunucusunun (7860) çalıştığından emin olun.');
+      } finally {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          status.style.display = 'none';
+      }
+  }
+
+  function sw(name,el){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    el.classList.add('active');
+    ['sn','ps','nm','zm'].forEach(t=>document.getElementById('t-'+t).style.display=t===name?'block':'none');
+    upd();
+  }
+  window.onload = upd;
+</script>
+</body>
+</html>
